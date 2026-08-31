@@ -1,0 +1,496 @@
+protocol:
+  task: 6
+  protocol_id: city_sensitivity_associations_r1
+  version: "0.1"
+  drafted_on: "2026-08-11"
+  status: frozen_confirmed
+  confirmed_on: "2026-08-11"
+  claim_type: associational
+  causal_language_prohibited: true
+
+analysis_population:
+  primary: common_285_cities_in_all_8_confirmatory_map_specifications
+  frozen_complete_case_n: 284
+  frozen_complete_case_exclusion:
+    - city_id: CN-630200
+      city_name: 海东市
+      reason: no_retained_worldpop_center_so_periurban_ring_and_farm_fraction_are_undefined
+  sensitivity:
+    - all_cities_with_available_task5_city_instability_metrics
+    - legacy_291_members_with_complete_covariates
+  unit_of_analysis: city
+  macroregion_definition:
+    id: china_seven_geographic_regions_r1
+    source: data/reference/china_seven_macroregions.csv
+    regions:
+      - east_china
+      - north_china
+      - northeast_china
+      - central_china
+      - south_china
+      - southwest_china
+      - northwest_china
+    fixed_effect_reference: east_china
+    cross_validation_folds: leave_one_macroregion_out_seven_folds
+  missing_covariates:
+    primary_rule: complete_case_only_after_missingness_audit
+    imputation: not_allowed_without_protocol_amendment
+    report_flow: registered_296_to_task5_common285_to_complete_covariate_sample
+
+outcomes:
+  primary:
+    id: total_rank_instability_rms
+    source: data/derived/R1_task5_city_factorial_sensitivity_decomposition.csv
+    source_filter:
+      scale: common285_normalized_rank_percentile
+      outcome_id: blue_green_share
+    formula: sqrt(ss_total_within_city / 8)
+    unit: normalized_rank_percentile
+    interpretation: root_mean_square_deviation_across_the_frozen_8_map_set
+  component_specific:
+    - id: boundary_rank_sensitivity_rms
+      formula: sqrt(ss_boundary / 8)
+    - id: product_rank_sensitivity_rms
+      formula: sqrt(ss_product / 8)
+    - id: interaction_rank_sensitivity_rms
+      formula: sqrt(ss_boundary_product_interaction / 8)
+  sensitivity:
+    - normalized_percentile_range
+    - normalized_percentile_iqr
+    - quartile_membership_entropy_bits
+  prohibited_primary_outcome:
+    - variance_share_alone
+  rationale: component_shares_are_unstable_when_total_instability_is_near_zero
+
+candidate_explanatory_domains:
+  confirmatory:
+    - id: city_population_2020
+      construct: city_size
+      preferred_source: official_2020_population_census_prefecture_city_table
+      transform: log1p
+      expected_direction: unspecified_control
+    - id: independent_city_area_km2
+      construct: spatial_extent
+      preferred_source: independent_registered_administrative_geometry
+      transform: log
+      expected_direction: unspecified_control
+    - id: polycentricity_index
+      construct: settlement_structure
+      preferred_source: independent_2020_built_up_or_population_surface
+      expected_direction_for_boundary_sensitivity: positive
+    - id: boundary_shape_complexity
+      construct: urban_form_complexity
+      preferred_source: independent_frozen_reference_geometry
+      expected_direction_for_boundary_sensitivity: positive
+    - id: periurban_farm_fraction
+      construct: urban_rural_gradient
+      preferred_source: independent_land_cover_product_not_used_in_task5_outcomes
+      expected_direction_for_boundary_sensitivity: positive
+    - id: surface_water_density
+      construct: hydrographic_context
+      preferred_source: jrc_global_surface_water_or_equivalent_independent_water_record
+      expected_direction_for_blue_and_total_sensitivity: positive
+    - id: terrain_ruggedness
+      construct: topographic_context
+      preferred_source: merit_dem_or_copernicus_dem
+      expected_direction_for_boundary_sensitivity: positive
+  diagnostic_not_confirmatory:
+    - number_of_gctb_components
+    - cross_boundary_area_range
+    - task5_landcover_class_share
+  diagnostic_reason: mechanically_or_lineage_coupled_to_boundary_or_landcover_outcomes
+
+operationalization_rules:
+  temporal_target: 2020_to_2021
+  acceptable_temporal_window: 2018_to_2022_with_explicit_justification
+  spatial_support: independent_registered_city_reference_geometry
+  no_outcome_derived_cutpoints: true
+  no_stepwise_variable_selection: true
+  no_univariate_p_value_screening: true
+  all_units_and_transformations_frozen_before_model_fit: true
+  source_lineage_and_license_required: true
+
+hypothesis:
+  id: H3
+  status: candidate
+  statement: polycentricity_boundary_complexity_periurban_farm_water_density_and_ruggedness_are_associated_with_greater_map_sensitivity_beyond_city_population_and_area
+  rival_explanations:
+    - shared_input_or_direct_measurement_coupling
+    - regional_confounding
+    - city_selection_and_covariate_missingness
+    - spatial_autocorrelation
+    - sensitivity_metric_scale_artifact
+  falsification_or_non_support:
+    - directions_reverse_or_are_highly_unstable_across_prespecified_models
+    - associations_disappear_in_spatial_block_validation
+    - independent_covariates_add_negligible_predictive_information_beyond_population_area_and_region
+
+models:
+  descriptive:
+    - pairwise_spearman_with_bootstrap_ci
+    - raw_scatter_and_partial_residual_diagnostics
+  confirmatory_associational:
+    formula: outcome_z ~ log_population_z + log_area_z + polycentricity_z + shape_complexity_z + periurban_farm_z + water_density_z + ruggedness_z + macroregion_fixed_effects
+    estimator: ordinary_least_squares
+    uncertainty: HC3_robust_95_percent_confidence_intervals
+    report: standardized_coefficients_confidence_intervals_partial_R2_and_model_adjusted_R2
+  robustness:
+    - rank_based_outcome_model
+    - leave_one_macroregion_out_refits
+    - spatial_block_cross_validation_by_macroregion
+    - variance_inflation_factor_and_condition_number
+    - influence_diagnostics_without_automatic_deletion
+    - component_specific_outcomes_with_FDR_correction
+  prohibited:
+    - causal_effect_language
+    - automated_stepwise_selection
+    - deleting_influential_cities_only_to_improve_significance
+    - treating_province_or_region_replicates_as_independent_when_resampling
+
+multiplicity:
+  single_primary_outcome: total_rank_instability_rms
+  primary_predictor_family: five_non_control_explanatory_domains
+  correction_for_component_specific_family: benjamini_hochberg_FDR
+  exploratory_results: label_explicitly
+
+validation:
+  preprocessing_fit_within_training_folds: true
+  block_definition: macroregion
+  performance_metrics:
+    - cross_validated_R2
+    - mean_absolute_error
+  baseline_model: population_area_and_macroregion_only
+  target_comparison: incremental_out_of_block_predictive_value
+
+gate_6a:
+  status: passed
+  protocol_confirmation: passed
+  confirmed_by: accountable_human_research_lead
+  confirmed_on: "2026-08-11"
+  passed_on: "2026-08-19"
+  national_covariate_table: data/derived/R1_task6_covariates_296.csv
+  national_audit: data/derived/R1_task6_national_covariates_296_audit.json
+  registered_city_count: 296
+  primary_complete_case_count: 284
+  pass_requirements:
+    - accountable_human_confirms_task6_protocol
+    - covariate_registry_has_frozen_definition_year_source_lineage_license_and_unit
+    - independent_reference_geometry_is_frozen
+    - city_coverage_and_missingness_are_audited
+    - no_confirmatory_model_has_been_fit_before_covariate_freeze
+
+gate_6b:
+  status: passed
+  passed_on: "2026-08-20"
+  model_frame: data/derived/R1_task6_model_frame_284.csv
+  premodel_audit: data/derived/R1_task6_premodel_diagnostics.json
+  complete_case_n: 284
+  model_fit_performed_during_gate: false
+  coefficient_or_significance_screening_performed: false
+  diagnostics:
+    maximum_vif: 2.7941119477527443
+    standardized_design_condition_index: 3.5315153256839764
+    predictor_pair_absolute_spearman_ge_0_8_count: 0
+    high_leverage_city_count_2p_over_n: 12
+    severe_leverage_city_count_3p_over_n: 2
+  formal_model_requirements:
+    - retain_all_valid_cities_in_primary_fit
+    - report_HC3_robust_intervals
+    - report_influence_diagnostics_without_automatic_deletion
+    - include_prespecified_sensitivity_excluding_severe_influence_cases
+    - fit_preprocessing_within_training_fold_for_cross_validation
+
+confirmatory_model_execution:
+  frozen_on: "2026-08-20"
+  sample_n: 284
+  alpha: 0.05
+  tests: two_sided
+  primary_inference:
+    estimator: ordinary_least_squares
+    outcome: total_rank_instability_rms_z
+    continuous_terms:
+      - log_population_z
+      - log_area_z
+      - polycentricity_z
+      - shape_complexity_z
+      - periurban_farm_z
+      - water_density_z
+      - ruggedness_z
+    region_fixed_effects: six_indicators_with_east_china_reference
+    uncertainty: HC3_robust_95_percent_confidence_intervals
+    partial_R2: classical_SSE_reduction_from_dropping_each_term_or_prespecified_block
+  influence_thresholds:
+    high_leverage: 2p_over_n
+    severe_leverage: 3p_over_n
+    cooks_distance: 4_over_n
+    absolute_external_studentized_residual: 3
+    absolute_dffits: 2_sqrt_p_over_n
+    absolute_dfbeta: 2_over_sqrt_n
+    primary_fit_deletion: prohibited
+    sensitivity_exclusion_union:
+      - leverage_gt_3p_over_n
+      - cooks_distance_gt_4_over_n
+      - absolute_external_studentized_residual_gt_3
+  leave_one_macroregion_out_refits:
+    region_fixed_effects: retained_for_regions_present_in_training_data
+    comparison_terms: seven_continuous_predictors
+  spatial_block_cross_validation:
+    folds: seven_leave_one_macroregion_out
+    outcome_scale: raw_total_rank_instability_rms
+    preprocessing: fit_on_training_fold_only
+    region_fixed_effects: omitted_because_held_out_region_level_is_unestimable
+    baseline_predictors:
+      - log_population
+      - log_area
+    full_predictors:
+      - log_population
+      - log_area
+      - polycentricity_index
+      - boundary_shape_complexity
+      - periurban_farm_fraction
+      - surface_water_density
+      - terrain_ruggedness_riley_mean_m
+    performance:
+      - pooled_cross_validated_R2
+      - mean_absolute_error
+    target: full_minus_baseline_incremental_out_of_region_prediction
+
+primary_confirmatory_model_result:
+  status: completed_passed_computational_audit
+  completed_on: "2026-08-20"
+  run_id: task6_primary_confirmatory_association_20260820_r1
+  manifest: data/derived/R1_task6_confirmatory_model_manifest.json
+  sample_n: 284
+  adjusted_R2: 0.18193120988784228
+  five_domain_incremental_partial_R2: 0.10489935279550229
+  five_domain_HC3_Wald_p: 0.00022043306593395743
+  directional_H3_assessment: not_supported_mixed_directions
+  spatial_block_cv:
+    baseline_pooled_R2: -0.07082050509921411
+    full_pooled_R2: 0.07698195251156092
+    delta_R2: 0.14780245761077504
+    full_better_mae_fold_count: 6_of_7
+  residual_action: retain_frozen_linear_model_and_use_HC3_as_prespecified
+  primary_fit_city_deletion: none
+
+component_confirmatory_model_result:
+  status: completed_passed_computational_audit
+  completed_on: "2026-08-20"
+  run_id: task6_component_models_fdr_20260820_r1
+  manifest: data/derived/R1_task6_component_models_fdr_manifest.json
+  sample_n: 284
+  models:
+    boundary:
+      adjusted_R2: 0.15226903003584868
+      five_domain_partial_R2: 0.08403950624105982
+    product:
+      adjusted_R2: 0.10018413208856936
+      five_domain_partial_R2: 0.09783148233477224
+    interaction:
+      adjusted_R2: 0.1952124009934656
+      five_domain_partial_R2: 0.10036288126988786
+  multiplicity:
+    method: Benjamini-Hochberg
+    family_size: 15
+    q_threshold: 0.05
+    rejected_n: 6
+    positive_direction_rejected_n: 1
+    negative_direction_rejected_n: 5
+  directional_H3_assessment: not_supported_component_results_predominantly_opposite_direction
+
+task6e_robustness_execution:
+  status: frozen_before_robustness_model_fit
+  frozen_on: "2026-08-20"
+  role: prespecified_robustness_not_replacement_confirmatory_analysis
+  sample_n: 284
+  common_model:
+    estimator: ordinary_least_squares
+    predictors_and_region_fixed_effects: identical_to_confirmatory_full_model
+    uncertainty: HC3_robust_95_percent_confidence_intervals
+    continuous_predictor_standardization: retain_frozen_full_sample_columns
+    tests: two_sided
+  rank_transformed_primary_outcome:
+    source: total_rank_instability_rms
+    tie_method: average_rank
+    transform: rank_minus_1_divided_by_n_minus_1_then_z_standardize
+    multiplicity_family: five_primary_domains
+    family_size: 5
+    correction: benjamini_hochberg_FDR
+  alternative_outcomes:
+    outcomes:
+      - normalized_percentile_range_z
+      - normalized_percentile_iqr_z
+      - quartile_membership_entropy_bits_z
+    multiplicity_family: five_primary_domains_x_three_alternative_outcomes
+    family_size: 15
+    correction: benjamini_hochberg_FDR
+  component_influence_sensitivity:
+    components:
+      - boundary_rank_sensitivity_rms_z
+      - product_rank_sensitivity_rms_z
+      - interaction_rank_sensitivity_rms_z
+    primary_component_fits: retain_all_284_cities
+    sensitivity_exclusion_union:
+      - leverage_gt_3p_over_n
+      - cooks_distance_gt_4_over_n
+      - absolute_external_studentized_residual_gt_3
+    exclusions: outcome_specific
+    multiplicity_family: five_primary_domains_x_three_component_sensitivity_refits
+    family_size: 15
+    correction: benjamini_hochberg_FDR
+  component_leave_one_macroregion_out:
+    folds: seven_per_component
+    region_fixed_effects: retained_for_regions_present_in_training_data
+    comparison_terms: seven_continuous_predictors
+    per_fold_significance_or_multiplicity_testing: prohibited
+    interpretation: coefficient_direction_stability_only
+
+task6e_robustness_result:
+  status: completed_passed_computational_audit
+  completed_on: "2026-08-20"
+  run_id: task6e_robustness_20260820_r1
+  manifest: data/derived/R1_task6e_robustness_manifest.json
+  sample_n: 284
+  rank_transformed_primary:
+    adjusted_R2: 0.156639210931927
+    five_domain_partial_R2: 0.07736654243637511
+    five_domain_HC3_Wald_p: 0.00047388715532659543
+    BH_FDR_rejected_n_of_5: 1
+  alternative_outcomes:
+    BH_FDR_rejected_n_of_15: 8
+    stable_pattern: polycentricity_positive_periurban_farm_negative_and_ruggedness_often_negative
+  component_influence_sensitivity:
+    excluded_n_by_outcome:
+      boundary: 19
+      product: 20
+      interaction: 16
+    primary_domain_sign_stable_n_of_15: 15
+    BH_FDR_decision_stable_n_of_15: 13
+    BH_FDR_rejected_n_of_15: 6
+    changed_decisions:
+      - product_periurban_farm_lost_FDR_rejection
+      - interaction_polycentricity_gained_FDR_rejection
+  component_leave_one_macroregion_out:
+    all_seven_fold_sign_stable_n_of_21_continuous: 13
+    all_seven_fold_sign_stable_n_of_15_primary_domains: 11
+  interpretation: core_mixed_direction_pattern_is_robust_but_selected_FDR_decisions_are_influence_sensitive
+
+task6f_spatial_dependence_execution:
+  status: frozen_confirmed_before_spatial_results
+  confirmed_on: "2026-08-20"
+  role: residual_spatial_dependence_audit_and_spatially_robust_inference
+  claim_type: associational_robustness
+  causal_spatial_lag_interpretation: prohibited
+  sample_n: 284
+  geometry:
+    source: data/derived/task6_reference_admin2021/task6_reference_admin2021.shp
+    expected_source_rows: 296
+    join_key: city_id
+    expected_analysis_rows: 284
+    centroid_definition: polygon_true_centroid_after_projection
+    centroid_projection: Asia_North_Albers_Equal_Area_Conic_ESRI_102025
+    distance_definition: WGS84_great_circle_haversine_between_projected_polygon_centroids
+    geometry_repair: prohibited_without_protocol_amendment
+  residual_models:
+    outcomes:
+      - total_rank_instability_rms_z
+      - boundary_rank_sensitivity_rms_z
+      - product_rank_sensitivity_rms_z
+      - interaction_rank_sensitivity_rms_z
+    formula_and_sample: identical_to_task6_and_task6d_full_models
+  moran_i:
+    primary_weights: symmetrized_binary_4_nearest_neighbors_row_standardized
+    sensitivity_weights:
+      - symmetrized_binary_8_nearest_neighbors_row_standardized
+      - binary_500_km_distance_band_row_standardized
+    permutation_replicates: 9999
+    random_seed: 20260820
+    p_value: two_sided_plus_one_relative_to_randomization_expectation
+    primary_outcome_test: single_prespecified_test
+    component_family:
+      size: 3
+      correction: benjamini_hochberg_FDR_within_each_weight_scheme
+  conley_spatial_hac:
+    estimator: OLS_coefficients_unchanged
+    distance_kernel: bartlett
+    primary_cutoff_km: 500
+    sensitivity_cutoffs_km: [250, 1000]
+    covariance_small_sample_correction: n_divided_by_n_minus_p
+    tests: two_sided_normal_reference
+    primary_five_domain_joint_test: robust_wald_chi_square
+    component_multiplicity:
+      family: five_primary_domains_x_three_components_within_each_cutoff
+      size: 15
+      correction: benjamini_hochberg_FDR
+  decision_rules:
+    - report_spatial_dependence_whether_significant_or_not
+    - compare_HC3_and_Conley_interval_exclusion_of_zero_without_replacing_main_coefficients
+    - report_all_three_Conley_cutoffs_and_all_three_Moran_weight_schemes
+    - no_predictor_selection_no_city_deletion_no_weight_selection_by_result
+
+task6f_spatial_dependence_result:
+  status: completed_passed_computational_audit
+  completed_on: "2026-08-20"
+  run_id: task6f_spatial_dependence_20260820_r1
+  manifest: data/derived/R1_task6f_spatial_dependence_manifest.json
+  geometry:
+    source_rows: 296
+    analysis_join_n: 284
+    feature_level_OGC_issue_count: 0
+    dataset_level_spatial_index_warning_count: 1
+  weights:
+    knn4_isolates: 0
+    knn8_isolates: 0
+    band500km_isolates: 1
+    band500km_isolated_city: CN-540100
+  residual_moran_primary_knn4:
+    I: 0.10046160087136653
+    permutation_p_two_sided: 0.0065
+    interpretation: small_positive_residual_spatial_dependence
+  residual_moran_sensitivity:
+    primary_knn8_p: 0.0087
+    primary_band500km_p: 0.0517
+    product_significant_all_three_schemes: true
+    interaction_significant_knn4_and_knn8_only: true
+    boundary_significant_any_scheme: false
+  conley_spatial_hac:
+    primary_500km_five_domain_wald_p: 0.00032969787798241295
+    primary_domain_CI_decisions_stable_n_of_5: 5
+    component_BH_rejections_at_250_500_1000_km: [7, 8, 8]
+    original_task6d_six_rejections_retained_all_cutoffs: true
+    coefficients_changed: false
+  interpretation: residual_spatial_structure_remains_but_primary_mixed_direction_inference_is_spatially_robust
+
+task6g_submission_synthesis_result:
+  status: completed_passed_submission_synthesis_audit
+  completed_on: "2026-08-20"
+  run_id: task6g_submission_synthesis_20260820_r1
+  role: frozen_result_synthesis_for_submission
+  analysis_population_n: 284
+  new_statistical_model_fit: false
+  result_selection_performed: false
+  primary_inference_remains: OLS_with_HC3_intervals
+  tables:
+    primary_associations: data/derived/R1_task6g_table1_primary_associations.csv
+    component_associations: data/derived/R1_task6g_table2_component_associations.csv
+    model_performance: data/derived/R1_task6g_tableS1_model_performance.csv
+    robustness_summary: data/derived/R1_task6g_tableS2_robustness_summary.csv
+    claim_evidence_registry: data/derived/R1_task6g_claim_evidence_registry.csv
+    manifest: data/derived/R1_task6g_submission_tables_manifest.json
+  figures:
+    directory: data/derived/figures/task6
+    main: data/derived/figures/task6/Figure_Task6_city_characteristics.pdf
+    supplement: data/derived/figures/task6/Figure_S_task6_robustness.pdf
+    manifest: data/derived/figures/task6/task6_figure_manifest.json
+    qa: data/derived/figures/task6/task6_figure_qa.json
+    backend: Python_matplotlib_only
+    width_mm: 180
+    raster_dpi: 600
+    source_preflight: 14_pass_0_warn_0_fail
+    visual_review: passed
+  narrative:
+    methods_results_draft: docs/task6g_methods_results_draft.md
+    legends_and_qa: docs/task6g_figure_legends_and_qa.md
+    claim_language: associational_evidence_bound
+    human_approval_required_before_submission: true
+  interpretation: city_characteristics_add_associational_information_but_directions_are_mixed_component_specific_and_predictive_generalization_is_limited

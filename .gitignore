@@ -1,0 +1,17 @@
+__pycache__/
+.pytest_cache/
+.venv/
+.idea/
+.vscode/
+work/
+data/reference/*
+data/derived/*
+data/external/*
+!data/README.md
+*.pyc
+*.pyo
+*.log
+*.lock
+*.tmp
+.DS_Store
+Thumbs.db

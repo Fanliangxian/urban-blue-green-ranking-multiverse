@@ -1,0 +1,71 @@
+{
+  "protocol_version": "r1",
+  "frozen_on": "2026-08-05",
+  "registered_city_count": 296,
+  "target_classes": [
+    "Blue",
+    "Green",
+    "Grey",
+    "Farm",
+    "Other_Uncertain"
+  ],
+  "denominators": [
+    "full_measurement_boundary_area",
+    "valid_classified_area"
+  ],
+  "boundary_scenarios": [
+    "gctb_core_2021",
+    "gctb_system_2021",
+    "gub_2018",
+    "ghs_uc_2020"
+  ],
+  "primary_geometry_variant": "raw_product_geometry",
+  "diagnostic_geometry_variant": "admin_clipped_geometry",
+  "primary_wetland_rule": "vegetated_wetland_is_green_open_water_is_blue",
+  "wetland_sensitivity_rule": "vegetated_wetland_and_open_water_are_blue",
+  "no_data_rule": "exclude_from_valid_classified_area_and_report_separately",
+  "valid_fraction_complete_threshold": 0.999,
+  "valid_fraction_low_coverage_threshold": 0.95,
+  "area_balance_relative_tolerance": 0.000001,
+  "valid_area_boundary_excess_relative_tolerance": 0.001,
+  "status_values": [
+    "complete_valid_coverage",
+    "partial_valid_coverage",
+    "low_valid_coverage",
+    "no_valid_pixels",
+    "boundary_unavailable",
+    "product_unavailable",
+    "technical_failure"
+  ],
+  "status_rules": {
+    "complete_valid_coverage": "valid_fraction >= 0.999",
+    "partial_valid_coverage": "0.95 <= valid_fraction < 0.999",
+    "low_valid_coverage": "0 < valid_fraction < 0.95",
+    "no_valid_pixels": "boundary exists and valid_area_m2 == 0",
+    "boundary_unavailable": "the frozen boundary assignment has no selected product geometry for the city and scenario",
+    "product_unavailable": "the land-cover asset, exact version, legend, access, or licence is not executable under the frozen protocol",
+    "technical_failure": "a geometrically and product-eligible row failed for a computational reason"
+  },
+  "categorical_estimator": "mutually_exclusive_native_class_pixel_area",
+  "dynamic_world_primary_estimator": "annual_mean_probability_area",
+  "dynamic_world_sensitivity_estimator": "annual_modal_label_area",
+  "dynamic_world_period_start_inclusive": "2021-01-01",
+  "dynamic_world_period_end_exclusive": "2022-01-01",
+  "dynamic_world_valid_pixel_rule": "at_least_one_unmasked_observation_in_2021",
+  "lineage_coupled_pairs": [
+    ["gctb_core_2021", "glc_fcs30d_2021"],
+    ["gctb_system_2021", "glc_fcs30d_2021"]
+  ],
+  "formal_eligibility_rules": {
+    "gub_2018": "formal_academic_use_and_public_release_research_lead_confirmed_2026_08_20_citation_required",
+    "lineage_coupled_pair": "retain_in_full_multiverse_exclude_from_confirmatory_independent_subset",
+    "globeland30_2020": "sensitivity_only_and_nonblocking"
+  },
+  "combination_key": [
+    "city_id",
+    "boundary_scenario_id",
+    "geometry_variant",
+    "landcover_dataset_id",
+    "estimator_id"
+  ]
+}

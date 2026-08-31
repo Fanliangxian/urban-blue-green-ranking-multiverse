@@ -1,0 +1,8 @@
+project_root: "/path/to/urban-blue-green-ranking-release"
+admin_2021_shapefile: "/path/to/admin2021_prefecture.shp"
+admin_assignment_shapefile: "/path/to/admin_assignment.shp"
+admin_2024_root: "/path/to/admin2024"
+gctb_2021_source: "/path/to/GCTB_2021"
+gub_2018_source: "/path/to/GUB_Global_2018.shp"
+ghs_uc_2020_source: "/path/to/GHS_UC_2020.shp"
+earth_engine_asset_root: "projects/YOUR_EE_PROJECT/assets"

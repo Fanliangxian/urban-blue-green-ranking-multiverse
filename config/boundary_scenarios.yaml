@@ -1,0 +1,162 @@
+{
+  "schema_version": "1.0",
+  "status": "frozen",
+  "frozen_on": "2026-08-05",
+  "population_registry": "data/reference/city_registry_analysis_2021.csv",
+  "population_registry_sha256": "d4f3b3156877becf6531174f10fd4c1b89a0176e68850980d1309a3f2a0ec303",
+  "administrative_geometry": {
+    "target_identity_reference_year": 2021,
+    "source_boundary_year": 2024,
+    "temporal_role": "assignment_frame_only_not_measurement_boundary",
+    "required_city_count": 296,
+    "join_key": "admin_geometry_key",
+    "source_status": "frozen_assignment_frame_for_296_analysis_registry",
+    "legacy_asset_hint": "projects/YOUR_EE_PROJECT/assets/omega_adm_all_pref_shp",
+    "local_source": "${UBGR_ADMIN_ASSIGNMENT_SHP}",
+    "origin": "National Platform for Common Geospatial Information Services (Tianditu), 2024 administrative vectors",
+    "map_approval_number": "GS(2024)0650",
+    "derived_geometry_semantics": "union/selection of municipal districts (county-code positions 5-6 equal 01-20), with added no-district cities; not full prefecture jurisdiction",
+    "declared_crs_from_file": "EPSG:4326 GCS_WGS_1984",
+    "audit_summary": {
+      "source_feature_count": 354,
+      "matched_analysis_city_count": 296,
+      "missing_analysis_city_ids": [],
+      "extra_source_features_ignored_by_registry_left_join": 58,
+      "duplicate_city_codes": 0,
+      "null_or_empty_geometries": 0,
+      "arcgis_ogc_check_geometry_problem_rows": 0,
+      "multipart_geometries": 84,
+      "shp_sha256": "0b0937985285bf0e2a910fa3f8cbf085977f6c6cdbb31b420414c32d589c9e1d"
+    },
+    "reuse_terms_status": "exact_download_dataset_terms_not_yet_archived",
+    "requirements": [
+      "documented_provenance_and_reuse_terms",
+      "exactly_one_nonempty_polygonal_record_per_analysis_city_id",
+      "all_296_analysis_registry_keys_present",
+      "source_crs_and_content_hash_or_cloud_asset_version_frozen",
+      "geometry_validity_and_area_audited",
+      "city_government_seat_source_required_only_if_a_tie_reaches_that_stage"
+    ]
+  },
+  "geometry_policy": {
+    "source_geometry": "preserve_immutable",
+    "missing_or_unknown_crs": "fatal",
+    "invalid_geometry": "quarantine_then_explicit_make_valid_to_new_artifact",
+    "empty_geometry": "retain_as_status_not_candidate",
+    "polygon_only_for_area_assignment": true,
+    "boundary_touch_only": "not_a_candidate",
+    "z_and_m": "ignored_for_topology_but_audited",
+    "proj_network": "disabled",
+    "measurement_crs": {
+      "name": "China Albers equal-area, study definition",
+      "proj_string": "+proj=aea +lat_1=25 +lat_2=47 +lat_0=0 +lon_0=105 +datum=WGS84 +units=m +no_defs +type=crs",
+      "axis_order": "always_xy",
+      "area_unit": "m2",
+      "distance_unit": "m"
+    },
+    "metric_rounding_for_deterministic_ties": {
+      "area_m2": 1,
+      "overlap_share_decimal_places": 12,
+      "distance_m": 1,
+      "interpretation": "computational tie key, not positional accuracy claim"
+    },
+    "precision_grid": null,
+    "precision_rule": "No coordinate snapping by default; any product-specific precision grid requires a new decision-log entry and pre/post area audit."
+  },
+  "candidate_generation": {
+    "cardinality": "many_product_entities_to_many_admin_units_before_assignment",
+    "predicate": "positive_polygonal_intersection_area",
+    "minimum_intersection_area_m2": 0,
+    "minimum_rule": "strictly_greater_than",
+    "candidate_row_key": ["dataset_id", "product_entity_id", "city_id"],
+    "duplicate_candidate_rows": "fatal",
+    "names_used_for_assignment": false
+  },
+  "entity_to_city_assignment": {
+    "cardinality_after_assignment": "zero_or_one_primary_city_per_product_entity",
+    "ranking_order": [
+      "intersection_area_m2_desc",
+      "intersection_share_of_admin_desc",
+      "entity_centroid_covered_by_admin_desc",
+      "entity_centroid_to_admin_seat_distance_m_asc",
+      "city_id_asc"
+    ],
+    "centroid_boundary_semantics": "covered_by; a centroid on a shared boundary may remain tied",
+    "missing_admin_seat_when_needed": "unresolved_no_primary_assignment",
+    "review_rule": "review_flag=1 when city_id is required to break the final tie",
+    "confidence_labels": [
+      "unique_max_intersection",
+      "resolved_by_overlap_share",
+      "resolved_by_centroid_location",
+      "resolved_by_admin_seat_distance",
+      "resolved_by_city_id_review",
+      "unresolved_missing_required_metric"
+    ]
+  },
+  "outputs": {
+    "primary_measurement_geometry": "raw_product_geometry_union_of_selected_entities",
+    "diagnostic_measurement_geometry": "selected_raw_geometry_intersected_with_assigned_admin_geometry",
+    "never_overwrite_raw_geometry": true,
+    "symmetrical_difference_reference": "gctb_core_2021_raw",
+    "required_city_scenario_fields": [
+      "city_id",
+      "scenario_id",
+      "coverage_status",
+      "selected_component_count",
+      "candidate_component_count",
+      "raw_area_km2",
+      "admin_clipped_area_km2",
+      "outside_admin_area_km2",
+      "symdiff_vs_gctb_core_km2",
+      "assignment_confidence",
+      "review_flag",
+      "source_feature_ids",
+      "run_id"
+    ]
+  },
+  "scenarios": {
+    "gctb_core_2021": {
+      "role": "primary",
+      "dataset_id": "gctb_2021",
+      "selection": "single assigned entity with greatest city intersection area; then entity area; then product_entity_id",
+      "minimums": null
+    },
+    "gctb_system_2021": {
+      "role": "primary",
+      "dataset_id": "gctb_2021",
+      "selection": "all entities already assigned to the city satisfying both inclusive thresholds",
+      "minimum_intersection_area_km2": 1.0,
+      "minimum_fraction_of_largest_assigned_intersection": 0.01,
+      "threshold_comparator": "greater_than_or_equal"
+    },
+    "gub_2018": {
+      "role": "primary",
+      "dataset_id": "gub_2018",
+      "selection": "single assigned entity with greatest city intersection area; then entity area; then product_entity_id",
+      "minimums": null
+    },
+    "ghs_uc_2020": {
+      "role": "primary",
+      "dataset_id": "ghs_uc_2020",
+      "selection": "single assigned entity with greatest city intersection area; then entity area; then product_entity_id",
+      "minimums": null
+    },
+    "gctb_legacy_5km2_2pct": {
+      "role": "legacy_sensitivity_only",
+      "dataset_id": "gctb_2021",
+      "selection": "all entities already assigned to the city satisfying both inclusive legacy thresholds",
+      "minimum_intersection_area_km2": 5.0,
+      "minimum_fraction_of_largest_assigned_intersection": 0.02,
+      "threshold_comparator": "greater_than_or_equal"
+    }
+  },
+  "prohibited_shortcuts": [
+    "city_name_or_product_name_matching",
+    "nearest_entity_assignment_without_positive_overlap",
+    "one_product_entity_duplicated_as_primary_for_multiple_cities",
+    "dropping_unmatched_registered_cities",
+    "using_gctb_2022_as_an_anchor_for_2021_assignment",
+    "silent_geometry_repair_or_sliver_deletion",
+    "changing_thresholds_after_viewing_296_city_results"
+  ]
+}

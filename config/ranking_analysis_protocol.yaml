@@ -1,0 +1,162 @@
+protocol:
+  task: 5
+  protocol_id: ranking_instability_r1
+  version: "0.1"
+  drafted_on: "2026-08-11"
+  status: frozen_confirmed
+  confirmed_on: "2026-08-11"
+  outcome_blinding: eligibility_audit_only_before_freeze
+
+study_frame:
+  registered_population_n: 296
+  matrix: data/derived/R1_city_scenario_landcover_estimator_matrix.csv
+  unit_of_ranking: city
+  unit_of_repeated_measurement: city_by_map_specification
+  claim_type: descriptive_measurement_robustness
+  prohibited_interpretations:
+    - map_consensus_as_ground_truth
+    - product_accuracy_without_independent_reference_data
+    - causal_effect_of_boundary_or_landcover_product
+
+map_specifications:
+  confirmatory:
+    boundary_scenarios:
+      - gctb_core_2021
+      - gctb_system_2021
+      - gub_2018
+      - ghs_uc_2020
+    landcover_estimators:
+      - landcover_dataset_id: esa_worldcover_2021
+        estimator_id: categorical_native_pixel_area
+      - landcover_dataset_id: dynamic_world_2021
+        estimator_id: annual_mean_probability_area
+    expected_specification_count: 8
+  estimator_sensitivity:
+    add:
+      - landcover_dataset_id: dynamic_world_2021
+        estimator_id: annual_modal_label_area
+    expected_total_specification_count: 12
+    interpretation: sensitivity_to_estimator_not_independent_product_replication
+
+ranking_outcomes:
+  primary:
+    id: blue_green_share
+    formula: Blue_share_full_boundary + Green_share_full_boundary
+    direction: descending
+    interpretation: share_of_measurement_boundary_mapped_as_open_water_or_vegetated_cover
+  component_secondary:
+    - id: green_share
+      field: Green_share_full_boundary
+      direction: descending
+    - id: blue_share
+      field: Blue_share_full_boundary
+      direction: descending
+      caveat: higher_is_not_assumed_to_mean_better_ecological_quality
+    - id: grey_share
+      field: Grey_share_full_boundary
+      direction: ascending
+      caveat: lower_grey_is_not_assumed_to_equal_overall_ecological_quality
+  diagnostic_only:
+    - Farm_share_full_boundary
+    - Other_Uncertain_share_full_boundary
+  excluded:
+    - arbitrary_weighted_composite_score
+    - farm_as_intrinsically_positive_ecological_score
+    - other_uncertain_as_intrinsically_negative_ecological_score
+
+denominators:
+  primary: full_measurement_boundary_area
+  sensitivity: valid_classified_area
+  rationale: primary_retains_unclassified_or_uncertain_area_in_the_measurement_system
+
+ranking_rule:
+  rank_one: most_favourable_in_declared_direction
+  ties: average_rank
+  normalized_percentile_formula: (n - average_rank) / (n - 1)
+  normalized_percentile_range: [0, 1]
+  normalized_percentile_best: 1
+  numerical_tie_tolerance: exact_stored_numeric_equality_only
+  no_rounding_before_ranking: true
+
+missing_data:
+  imputation: prohibited
+  within_specification_rule: rank_all_measurable_formal_eligible_cities
+  confirmatory_comparability_rule: also_analyse_intersection_measurable_in_all_8_confirmatory_specifications
+  registered_population_reporting: always_report_296_and_each_specification_denominator
+  availability_is_an_outcome: true
+  sensitivity_sets:
+    - available_case_within_each_specification
+    - common_city_complete_case_across_8_confirmatory_specifications
+    - legacy_291_members_only
+    - exclude_gub_2018_year_mismatch
+    - exclude_dynamic_world_low_support_cities
+
+instability_metrics:
+  map_level:
+    - pairwise_spearman_rho
+    - pairwise_kendall_tau_b
+    - top_decile_jaccard
+    - top_quintile_jaccard
+  city_level:
+    - median_normalized_percentile
+    - normalized_percentile_range
+    - normalized_percentile_iqr
+    - normalized_percentile_sd
+    - top_decile_specification_share
+    - top_quintile_specification_share
+    - bottom_quintile_specification_share
+    - quartile_membership_count
+    - quartile_membership_entropy
+  thresholds:
+    top_decile: ceiling_10_percent_of_specification_n
+    top_quintile: ceiling_20_percent_of_specification_n
+    quartiles: rank_based_four_groups_with_deterministic_tie_preservation
+  interpretation: proportions_describe_the_frozen_finite_specification_set_not_probabilities_over_all_possible_maps
+
+source_attribution:
+  balanced_common_city_design:
+    factors:
+      boundary_scenario: 4_levels_fixed
+      landcover_product: 2_levels_fixed
+    outcomes:
+      - blue_green_share
+      - normalized_rank_percentile
+    required_terms:
+      - city
+      - boundary_scenario
+      - landcover_product
+      - boundary_by_product
+    emphasis:
+      - effect_magnitudes_and_uncertainty
+      - within_city_contrasts
+    prohibited_shortcut: treating_8_repeated_city_measurements_as_independent
+  descriptive_decomposition:
+    boundary_sensitivity: same_product_across_boundaries
+    product_sensitivity: same_boundary_across_products
+    interaction_sensitivity: nonadditivity_of_boundary_and_product_contrasts
+
+quality_sensitivity:
+  dynamic_world_flags:
+    - dynamic_world_low_support_majority_flag
+    - dynamic_world_zero_observation_flag
+    - mean_observation_count_on_observed_area
+  modal_tie_field: modal_tie_fraction_valid_area
+  rule: quality_flags_do_not_trigger_primary_exclusion
+
+multiplicity_and_reporting:
+  primary_outcome_family: blue_green_share_only
+  component_outcomes: secondary_and_labelled
+  pairwise_map_comparisons: report_complete_matrix_with_uncertainty_not_significance_cherry_picking
+  exploratory_analyses: label_and_log_after_freeze
+  deviations: append_to_decision_log_with_date_and_rationale
+
+gate_5:
+  status: passed
+  confirmed_by: accountable_human_research_lead
+  confirmed_on: "2026-08-11"
+  pass_requirements:
+    - accountable_human_confirms_protocol
+    - eight_confirmatory_specifications_are_executable
+    - common_city_intersection_is_reported
+    - ranking_and_missing_rules_are_testable
+    - no_target_rank_results_were_inspected_before_freeze

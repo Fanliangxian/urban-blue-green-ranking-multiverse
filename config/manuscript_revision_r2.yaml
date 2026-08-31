@@ -1,0 +1,185 @@
+revision_id: manuscript_revision_20260820_r2
+status: gate_r1_confirmed_ready_for_r2
+prepared_on: "2026-08-20"
+gate_r1:
+  status: passed
+  confirmed_by: accountable_human_research_lead
+  confirmed_on: "2026-08-20"
+  confirmed_items:
+    - title
+    - construct_boundary
+    - central_claim
+    - three_contributions
+    - terminology_policy
+    - sole_new_analysis_allowance
+target_journal: Computers_Environment_and_Urban_Systems
+article_type: research_article
+submission_ready: false
+
+title: "Are urban blue-green rankings properties of cities or maps? A lineage-aware measurement multiverse across 296 Chinese cities"
+chinese_working_title: "城市蓝绿排名属于城市还是地图？覆盖296个中国城市的谱系感知测量多宇宙"
+
+formal_registration_status: internal_protocol_freeze_not_public_preregistration
+registration_language:
+  prohibited_without_external_record: preregistered
+  preferred:
+    - prespecified
+    - protocol_frozen
+    - defined_before_national_analysis
+  exception_rule: retain_preregistered_only_if_a_public_externally_timestamped_registration_is_supplied_and_verified
+
+construct:
+  preferred_term: urban_blue_green_ranking
+  acceptable_short_terms:
+    - map_based_blue_green_ranking
+    - blue_green_city_ranking
+  operational_definition: relative_city_order_from_blue_plus_green_area_share_within_each_measurement_boundary_and_landcover_setting
+  not_directly_measured:
+    - ecological_quality
+    - biodiversity
+    - green_space_accessibility
+    - ecosystem_service_quality
+  broad_term_rule: ecological_or_sustainability_ranking_only_for_the_wider_indicator_literature
+
+claim_ceiling: descriptive_measurement_and_associational
+central_claim: "Urban blue-green rankings are map-conditional measurements: boundary and land-cover source/estimator choices contribute comparably within the finite multiverse, while the magnitude and source of sensitivity vary systematically among cities without identifying accuracy or causation."
+
+contributions:
+  - id: population_before_maps
+    statement: define_the_city_population_independently_before_candidate_map_coverage_is_observed
+  - id: crossed_measurement_uncertainty
+    statement: cross_boundary_and_landcover_source_estimator_axes_in_a_balanced_factorial_measurement_multiverse
+  - id: structured_city_susceptibility
+    statement: convert_within_city_factorial_variation_to_total_and_component_RMS_outcomes_and_test_prespecified_city_associations
+
+population_cascade:
+  registered: 296
+  any_setting: 294
+  all_eight: 285
+  task6: 284
+population_reporting_rule: state_the_relevant_denominator_for_every_result_and_display
+task6_structural_exclusion: CN-630200_Haidong_undefined_periurban_farm_fraction
+
+boundary_design:
+  scenario_count: 4
+  lineage_count: 3
+  scenarios:
+    - gctb_core_2021
+    - gctb_system_2021
+    - gub_2018
+    - ghs_uc_2020
+  lineages:
+    - GCTB
+    - GUB
+    - GHS
+  gctb_scenarios:
+    - gctb_core_2021
+    - gctb_system_2021
+  publication_phrase: four_prespecified_boundary_scenarios_spanning_three_product_lineages
+
+landcover_factor:
+  level_count: 2
+  sources:
+    - esa_worldcover_2021
+    - dynamic_world_2021
+  estimators:
+    esa_worldcover_2021: categorical_native_pixel_area
+    dynamic_world_2021: annual_mean_probability_area
+  first_use_term: land_cover_source_estimator_component
+  later_short_term_allowed: product_component
+  reason: source_product_and_estimator_architecture_differ_simultaneously
+
+finite_multiverse_estimand:
+  design: frozen_4_boundary_by_2_landcover_setting_set
+  interpretation: descriptive_partition_of_within_city_variation_over_the_eight_included_settings
+  applies_to:
+    - rank_scale_49_6_boundary_41_4_product_9_0_interaction
+    - mapped_share_scale_51_1_boundary_44_0_product_4_9_interaction
+  prohibited_generalization: variance_components_over_all_possible_maps
+
+included_research_questions:
+  - RQ1
+  - RQ2
+  - RQ3
+rq4_status: not_completed_excluded_from_current_manuscript_claims
+
+new_analysis_scope:
+  - two_3x2_gctb_lineage_sensitivities
+new_analysis_population: frozen_task5_common_285
+new_analysis_designs:
+  core_gub_ghs_3x2:
+    boundaries: [gctb_core_2021, gub_2018, ghs_uc_2020]
+    landcover_levels: [esa_worldcover_2021, dynamic_world_2021]
+  system_gub_ghs_3x2:
+    boundaries: [gctb_system_2021, gub_2018, ghs_uc_2020]
+    landcover_levels: [esa_worldcover_2021, dynamic_world_2021]
+new_analysis_metrics:
+  - median_and_minimum_pairwise_spearman
+  - median_top_decile_jaccard
+  - median_top_quintile_jaccard
+  - median_and_maximum_within_city_percentile_range
+  - boundary_product_interaction_shares_on_rank_and_mapped_share_scales
+new_analysis_role: sensitivity_to_duplicate_gctb_lineage_representation_not_new_primary_analysis
+task6_refit_permitted: false
+
+main_figures:
+  figure_1: study_area_population_and_measurement_scenarios
+  figure_2: ranking_instability_across_specifications
+  figure_3: geography_of_urban_rank_instability
+  figure_4: geographic_decomposition_of_map_sensitivity
+  figure_5: city_characteristics_associated_with_sensitivity
+current_workflow_figure_role: supplementary_figure_S1_or_graphical_abstract
+
+results_structure:
+  - coverage_and_analysis_populations
+  - whole_list_agreement_did_not_imply_stable_leading_cities
+  - boundary_and_landcover_choices_contributed_comparably_in_the_finite_multiverse
+  - map_dependence_was_structured_across_cities
+  - associations_were_directionally_robust_but_weakly_transportable
+
+discussion_structure:
+  - rankings_as_conditional_measurements_not_intrinsic_city_attributes
+  - spatial_support_and_thematic_representation_as_distinct_measurement_stages
+  - relational_rank_uncertainty
+  - structured_but_noncausal_city_susceptibility
+
+color_semantics:
+  boundary: blue
+  landcover_source_estimator: orange
+  interaction: purple
+  total_sensitivity: dark_teal_or_blue
+  accessibility_rule: redundant_symbols_or_line_styles_where_color_encodes_categories
+
+public_code_release:
+  status: deferred_until_final_manuscript_approval
+  data_processing_scripts: planned
+  statistical_analysis_scripts: planned
+  plotting_scripts_decision: deferred_to_final_github_gate
+  repository_url_status: not_created_do_not_invent
+  archive_identifier_status: not_created_do_not_invent
+
+public_data_release:
+  source_only_data_availability_statement: true
+  gub_release_allowed: true
+  gub_article_citation_required: true
+  gub_permission_evidence: research_lead_explicit_confirmation_2026_08_20_earlier_author_email_not_archived
+  gub_standard_license_label: unverified_do_not_invent
+  other_third_party_materials: review_individually_at_final_release_gate
+
+prohibited_claims:
+  - blue_green_cover_equals_ecological_quality
+  - first_discovery_that_boundaries_change_green_rankings
+  - any_product_is_the_most_accurate
+  - map_disagreement_is_error_or_bias
+  - city_characteristics_cause_map_sensitivity
+  - finite_eight_setting_results_generalize_to_all_possible_maps
+  - strong_out_of_region_generalization
+
+human_gates:
+  gate_r1: passed_2026_08_20
+  literature: source_and_locator_verification_after_figures_and_scientific_structure_are_frozen
+  authorship: author_order_affiliations_and_CRediT_confirmation
+  declarations: funding_conflicts_acknowledgements_permissions_and_AI_statement
+  journal: live_author_guide_and_institutional_JCR_verification
+  release: final_GitHub_scope_and_permission_review
+  final: accountable_author_scientific_and_language_approval

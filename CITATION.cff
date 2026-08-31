@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+message: "Please cite the associated article and archived software release."
+title: "Urban blue-green ranking measurement multiverse"
+type: software
+author:
+  - name: Liangxian Fan
+version: 0.1.0
+date-released: 2026-09-01
+license: MIT
+repository-code: "https://github.com/Fanliangxian/urban-blue-green-ranking-multiverse"
+abstract: "Data-processing, statistical-analysis and figure-generation code for a lineage-aware urban blue-green ranking measurement multiverse across 296 Chinese cities."
+keywords:
+  - urban boundary
+  - land cover
+  - ranking uncertainty
+  - measurement multiverse

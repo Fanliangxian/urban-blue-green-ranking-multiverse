@@ -1,0 +1,91 @@
+{
+  "schema_version": "1.0",
+  "frozen_on": "2026-08-05",
+  "primary_mapping_definition": "Open water is Blue; vegetated natural cover, including vegetated wetlands, is Green; built or impervious cover is Grey; cropland is Farm; other valid classes are Other_Uncertain.",
+  "sensitivity_mapping_definition": "Vegetated wetland classes move from Green to Blue; all other mappings remain unchanged.",
+  "products": {
+    "esa_worldcover_2021": {
+      "crosswalk_status": "verified",
+      "native_legend_complete": true,
+      "asset_id": "ESA/WorldCover/v200",
+      "image_selection": "ee.ImageCollection(asset_id).first()",
+      "class_band": "Map",
+      "native_resolution_m": 10,
+      "legend_evidence_url": "https://developers.google.com/earth-engine/datasets/catalog/ESA_WorldCover_v200",
+      "classes": [
+        {"native_code": 10, "native_name": "Tree cover", "target_class": "Green", "sensitivity_target_class": "Green"},
+        {"native_code": 20, "native_name": "Shrubland", "target_class": "Green", "sensitivity_target_class": "Green"},
+        {"native_code": 30, "native_name": "Grassland", "target_class": "Green", "sensitivity_target_class": "Green"},
+        {"native_code": 40, "native_name": "Cropland", "target_class": "Farm", "sensitivity_target_class": "Farm"},
+        {"native_code": 50, "native_name": "Built-up", "target_class": "Grey", "sensitivity_target_class": "Grey"},
+        {"native_code": 60, "native_name": "Bare / sparse vegetation", "target_class": "Other_Uncertain", "sensitivity_target_class": "Other_Uncertain"},
+        {"native_code": 70, "native_name": "Snow and ice", "target_class": "Other_Uncertain", "sensitivity_target_class": "Other_Uncertain"},
+        {"native_code": 80, "native_name": "Permanent water bodies", "target_class": "Blue", "sensitivity_target_class": "Blue"},
+        {"native_code": 90, "native_name": "Herbaceous wetland", "target_class": "Green", "sensitivity_target_class": "Blue"},
+        {"native_code": 95, "native_name": "Mangroves", "target_class": "Green", "sensitivity_target_class": "Blue"},
+        {"native_code": 100, "native_name": "Moss and lichen", "target_class": "Other_Uncertain", "sensitivity_target_class": "Other_Uncertain"}
+      ]
+    },
+    "dynamic_world_2021": {
+      "crosswalk_status": "verified",
+      "native_legend_complete": true,
+      "asset_id": "GOOGLE/DYNAMICWORLD/V1",
+      "image_selection": "filterDate('2021-01-01', '2022-01-01')",
+      "class_band": "label",
+      "probability_bands_sum_to_one": true,
+      "native_resolution_m": 10,
+      "legend_evidence_url": "https://developers.google.com/earth-engine/datasets/catalog/GOOGLE_DYNAMICWORLD_V1",
+      "classes": [
+        {"native_code": 0, "native_name": "water", "target_class": "Blue", "sensitivity_target_class": "Blue"},
+        {"native_code": 1, "native_name": "trees", "target_class": "Green", "sensitivity_target_class": "Green"},
+        {"native_code": 2, "native_name": "grass", "target_class": "Green", "sensitivity_target_class": "Green"},
+        {"native_code": 3, "native_name": "flooded_vegetation", "target_class": "Green", "sensitivity_target_class": "Blue"},
+        {"native_code": 4, "native_name": "crops", "target_class": "Farm", "sensitivity_target_class": "Farm"},
+        {"native_code": 5, "native_name": "shrub_and_scrub", "target_class": "Green", "sensitivity_target_class": "Green"},
+        {"native_code": 6, "native_name": "built", "target_class": "Grey", "sensitivity_target_class": "Grey"},
+        {"native_code": 7, "native_name": "bare", "target_class": "Other_Uncertain", "sensitivity_target_class": "Other_Uncertain"},
+        {"native_code": 8, "native_name": "snow_and_ice", "target_class": "Other_Uncertain", "sensitivity_target_class": "Other_Uncertain"}
+      ]
+    },
+    "esri_io_2021": {
+      "crosswalk_status": "provisional_pending_community_asset_inventory",
+      "native_legend_complete": true,
+      "asset_id": "projects/sat-io/open-datasets/landcover/ESRI_Global-LULC_10m_TS",
+      "image_selection": null,
+      "class_band": null,
+      "native_resolution_m": 10,
+      "legend_evidence_url": "https://livingatlas.arcgis.com/landcover/",
+      "classes": [
+        {"native_code": 1, "native_name": "Water", "target_class": "Blue", "sensitivity_target_class": "Blue"},
+        {"native_code": 2, "native_name": "Trees", "target_class": "Green", "sensitivity_target_class": "Green"},
+        {"native_code": 4, "native_name": "Flooded vegetation", "target_class": "Green", "sensitivity_target_class": "Blue"},
+        {"native_code": 5, "native_name": "Crops", "target_class": "Farm", "sensitivity_target_class": "Farm"},
+        {"native_code": 7, "native_name": "Built area", "target_class": "Grey", "sensitivity_target_class": "Grey"},
+        {"native_code": 8, "native_name": "Bare ground", "target_class": "Other_Uncertain", "sensitivity_target_class": "Other_Uncertain"},
+        {"native_code": 9, "native_name": "Snow/ice", "target_class": "Other_Uncertain", "sensitivity_target_class": "Other_Uncertain"},
+        {"native_code": 10, "native_name": "Clouds", "target_class": "Other_Uncertain", "sensitivity_target_class": "Other_Uncertain"},
+        {"native_code": 11, "native_name": "Rangeland", "target_class": "Green", "sensitivity_target_class": "Green"}
+      ]
+    },
+    "glc_fcs30d_2021": {
+      "crosswalk_status": "deferred_until_official_35_class_legend_and_gee_asset_inventory_agree",
+      "native_legend_complete": false,
+      "asset_id": "projects/sat-io/open-datasets/GLC-FCS30D/annual",
+      "image_selection": null,
+      "class_band": null,
+      "native_resolution_m": 30,
+      "legend_evidence_url": "https://essd.copernicus.org/articles/16/1353/2024/",
+      "classes": []
+    },
+    "globeland30_2020": {
+      "crosswalk_status": "deferred_until_exact_download_and_reuse_terms_are_frozen",
+      "native_legend_complete": false,
+      "asset_id": null,
+      "image_selection": null,
+      "class_band": null,
+      "native_resolution_m": 30,
+      "legend_evidence_url": "http://www.globeland30.org",
+      "classes": []
+    }
+  }
+}
